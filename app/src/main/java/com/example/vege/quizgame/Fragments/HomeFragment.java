@@ -11,9 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.example.vege.quizgame.MainActivity;
 import com.example.vege.quizgame.R;
 
 public class HomeFragment extends Fragment implements SensorEventListener {
@@ -31,21 +29,25 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //init sensor
         sensorConfig();
+        startSensor();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        stopSensor();
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        getViews();
-
-
-    }
-
-    private void getViews() {
-
-
+        //sensor back to work
+        startSensor();
 
     }
 
@@ -77,11 +79,19 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
     }
 
-    private void sensorConfig(){
+    private void stopSensor() {
+        mSensorManager.unregisterListener(this);
 
+    }
+
+    private void startSensor() {
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+    }
+
+    private void sensorConfig(){
         mSensorManager = (SensorManager) getContext().getSystemService(getContext().SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
     }
 }

@@ -33,17 +33,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    private void setFragment() {
-        //activity will start with home fragment
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new HomeFragment()).commit();
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        stopSensor();
 
     }
 
-    private void sensorConfig(){
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-        mSensorManager = (SensorManager) this.getSystemService(this.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        startSensor();
 
     }
 
@@ -72,6 +74,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+
+    private void setFragment() {
+        //activity will start with home fragment
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new HomeFragment()).commit();
+
+    }
+
+    private void sensorConfig(){
+        mSensorManager = (SensorManager) this.getSystemService(this.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        startSensor();
+
+    }
+
+    private void stopSensor() {
+        mSensorManager.unregisterListener(this);
+    }
+
+    private void startSensor() {
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
     }
 }
