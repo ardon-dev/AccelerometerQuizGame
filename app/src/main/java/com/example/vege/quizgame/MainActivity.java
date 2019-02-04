@@ -1,18 +1,20 @@
 package com.example.vege.quizgame;
 
 import android.annotation.SuppressLint;
-import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.vege.quizgame.DataBase.AppDataBase;
-import com.example.vege.quizgame.Fragments.GameFragment;
+import com.example.vege.quizgame.DataBase.Question;
 import com.example.vege.quizgame.Fragments.HomeFragment;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mAccelerometer;
     private SensorManager mSensorManager;
     private TextView mCoordinates;
-    private AppDataBase db;
+    public static AppDataBase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,14 +31,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         mCoordinates = findViewById(R.id.coordinates);
 
-        //Database build
-        db = Room.databaseBuilder(this, AppDataBase.class, "question_db").allowMainThreadQueries().build();
+        //database build
+        db = Room.databaseBuilder(this, AppDataBase.class, "question_db")
+                .allowMainThreadQueries().build();
 
         //sensor setup
         sensorConfig();
 
         //setting initial screen (home fragment)
         setFragment();
+
+        showQuestions();
 
     }
 
@@ -104,6 +109,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void startSensor() {
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+    }
+
+    private void showQuestions() {
+
+        ImageView mShowQuestionsButton = findViewById(R.id.buttomShowQuestions);
+        mShowQuestionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, QuestionsActivity.class);
+                MainActivity.this.startActivity(intent);
+            }
+        });
 
     }
 }

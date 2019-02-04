@@ -19,4 +19,12 @@
         android:text="x: y:"
         android:padding="8dp" />
 
+    <ImageView
+        android:id="@+id/buttomShowQuestions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_format_list_bulleted_black_24dp"
+        android:padding="16dp"
+        android:layout_alignParentEnd="true"/>
+
 </RelativeLayout>
