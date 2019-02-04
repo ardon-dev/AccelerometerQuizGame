@@ -1,6 +1,8 @@
 package com.example.vege.quizgame;
 
 import android.annotation.SuppressLint;
+import android.arch.persistence.room.Database;
+import android.arch.persistence.room.Room;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.example.vege.quizgame.DataBase.AppDataBase;
 import com.example.vege.quizgame.Fragments.GameFragment;
 import com.example.vege.quizgame.Fragments.HomeFragment;
 
@@ -17,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mAccelerometer;
     private SensorManager mSensorManager;
     private TextView mCoordinates;
+    private AppDataBase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +28,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         mCoordinates = findViewById(R.id.coordinates);
+
+        //Database build
+        db = Room.databaseBuilder(this, AppDataBase.class, "question_db").allowMainThreadQueries().build();
 
         //sensor setup
         sensorConfig();
