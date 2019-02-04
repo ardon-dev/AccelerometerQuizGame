@@ -15,4 +15,13 @@ public interface QuestionDao {
     @Query("SELECT * FROM question")
     List<Question> getAllQuestion();
 
+    @Query("SELECT question_question FROM question WHERE question_id = :id")
+    String getSingleQuestion(int id);
+
+    @Query("SELECT question_answer_1 FROM question WHERE question_id = :id")
+    String getSingleAnswerOne(int id);
+
+    @Query("SELECT question_answer_2 FROM question WHERE question_id = :id")
+    String getSingleAnswerTwo(int id);
+
 }

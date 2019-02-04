@@ -13,15 +13,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.vege.quizgame.MainActivity;
 import com.example.vege.quizgame.R;
 
 public class GameFragment extends Fragment implements SensorEventListener {
 
     private Sensor mAccelerometer;
     private SensorManager mSensorManager;
+    private TextView mQuestion, mAnswer1, mAnswer2;
     private RelativeLayout mBackgroundFull;
+    private static int counter;
 
     @Nullable
     @Override
@@ -31,11 +35,23 @@ public class GameFragment extends Fragment implements SensorEventListener {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mQuestion = getActivity().findViewById(R.id.viewQuestion);
+        mAnswer1 = getActivity().findViewById(R.id.buttonAnswer1);
+        mAnswer2 = getActivity().findViewById(R.id.buttonAnswer2);
+
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //
+        //sensor setup
         sensorConfig();
+
+        //sensor initialize
         sensorStart();
 
     }
@@ -50,6 +66,16 @@ public class GameFragment extends Fragment implements SensorEventListener {
     public void onResume() {
         super.onResume();
         sensorStart();
+
+        if (counter < MainActivity.db.questionDao().getAllQuestion().size()) {
+            counter++;
+            mQuestion.setText(MainActivity.db.questionDao().getSingleQuestion(counter));
+            mAnswer1.setText(MainActivity.db.questionDao().getSingleAnswerOne(counter));
+            mAnswer2.setText(MainActivity.db.questionDao().getSingleAnswerTwo(counter));
+
+        } else {
+            Toast.makeText(getContext(), "Juego acabado", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -120,6 +146,10 @@ public class GameFragment extends Fragment implements SensorEventListener {
 
     private void stopSensor() {
         mSensorManager.unregisterListener(this);
+
+    }
+
+    private void setQuestion() {
 
     }
 

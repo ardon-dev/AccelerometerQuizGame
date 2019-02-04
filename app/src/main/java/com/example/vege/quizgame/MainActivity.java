@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //setting initial screen (home fragment)
         setFragment();
 
+        //ist onclick button
         showQuestions();
 
     }
