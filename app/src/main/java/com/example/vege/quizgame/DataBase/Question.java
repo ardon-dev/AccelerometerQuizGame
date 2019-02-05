@@ -19,10 +19,14 @@ public class Question {
     @ColumnInfo(name = "question_answer_2")
     public String question_answer_2;
 
-    public Question(String question_question, String question_answer_1, String question_answer_2) {
+    @ColumnInfo(name = "question_answer_right")
+    public String question_answer_right;
+
+    public Question(String question_question, String question_answer_1, String question_answer_2, String question_answer_right) {
         this.question_question = question_question;
         this.question_answer_1 = question_answer_1;
         this.question_answer_2 = question_answer_2;
+        this.question_answer_right = question_answer_right;
     }
 
     public int getQuestion_id() {
@@ -56,4 +60,13 @@ public class Question {
     public void setQuestion_answer_2(String question_answer_2) {
         this.question_answer_2 = question_answer_2;
     }
+
+    public String getQuestion_answer_right() {
+        return question_answer_right;
+    }
+
+    public void setQuestion_answer_right(String question_answer_right) {
+        this.question_answer_right = question_answer_right;
+    }
+
 }

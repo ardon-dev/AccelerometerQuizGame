@@ -4,6 +4,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -23,9 +24,9 @@ public class GameFragment extends Fragment implements SensorEventListener {
 
     private Sensor mAccelerometer;
     private SensorManager mSensorManager;
-    private TextView mQuestion, mAnswer1, mAnswer2;
-    private RelativeLayout mBackgroundFull;
-    private static int counter;
+    private TextView mQuestion, mAnswer1, mAnswer2, mGameFinished;
+    public static int counter;
+    private RelativeLayout mAnswerBG1, mAnswerBG2;
 
     @Nullable
     @Override
@@ -41,6 +42,9 @@ public class GameFragment extends Fragment implements SensorEventListener {
         mQuestion = getActivity().findViewById(R.id.viewQuestion);
         mAnswer1 = getActivity().findViewById(R.id.buttonAnswer1);
         mAnswer2 = getActivity().findViewById(R.id.buttonAnswer2);
+        mAnswerBG1 = getActivity().findViewById(R.id.answerBackground1);
+        mAnswerBG2 = getActivity().findViewById(R.id.answerBackground2);
+        mGameFinished = getActivity().findViewById(R.id.gameFinishedText);
 
     }
 
@@ -59,22 +63,26 @@ public class GameFragment extends Fragment implements SensorEventListener {
     @Override
     public void onPause() {
         super.onPause();
+
+        //sensor stops
         stopSensor();
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        //sensor continue working
         sensorStart();
 
+        //the game will ends when the questions are over
         if (counter < MainActivity.db.questionDao().getAllQuestion().size()) {
-            counter++;
-            mQuestion.setText(MainActivity.db.questionDao().getSingleQuestion(counter));
-            mAnswer1.setText(MainActivity.db.questionDao().getSingleAnswerOne(counter));
-            mAnswer2.setText(MainActivity.db.questionDao().getSingleAnswerTwo(counter));
+            gameStart();
 
         } else {
-            Toast.makeText(getContext(), "Juego acabado", Toast.LENGTH_SHORT).show();
+            gameFinish();
+
         }
     }
 
@@ -94,12 +102,12 @@ public class GameFragment extends Fragment implements SensorEventListener {
 
                 switch (direction) {
                     case -2:
-                        Toast.makeText(getContext(),"Izquierda", Toast.LENGTH_SHORT).show();
+                        validateAnswerOne();
                         stopSensor();
                         switchFragment();
                         break;
                     case 2:
-                        Toast.makeText(getContext(), "Derecha", Toast.LENGTH_SHORT).show();
+                        validateAnswerTwo();
                         stopSensor();
                         switchFragment();
                         break;
@@ -116,19 +124,56 @@ public class GameFragment extends Fragment implements SensorEventListener {
 
     }
 
+    private void gameStart() {
+        //counter will increment to show the next question when the fragment be restarted
+        counter++;
+        //set question and anwser to views
+        mQuestion.setText(MainActivity.db.questionDao().getSingleQuestion(counter));
+        mAnswer1.setText(MainActivity.db.questionDao().getSingleAnswerOne(counter));
+        mAnswer2.setText(MainActivity.db.questionDao().getSingleAnswerTwo(counter));
+
+    }
+
+    private void gameFinish() {
+
+        //HIDE VIEWS
+        mAnswer1.setVisibility(View.INVISIBLE);
+        mAnswerBG1.setVisibility(View.INVISIBLE);
+        mAnswer2.setVisibility(View.INVISIBLE);
+        mAnswerBG2.setVisibility(View.INVISIBLE);
+        mQuestion.setVisibility(View.INVISIBLE);
+
+        //SEE VIEW
+        mGameFinished.setVisibility(View.VISIBLE);
+
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //game finishes
+                stopSensor();
+                //question counter restarts
+                counter = 0;
+                //activity close
+                getActivity().finish();
+            }
+        }, 1000);
+
+    }
+
     private void switchFragment() {
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                //fragment will be loaded again after 3 seconds
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
+                //fragment will be loaded again after 2 seconds
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.gameContainer,
                         new GameFragment()).commit();
-                Toast.makeText(getContext(), "Switch", Toast.LENGTH_SHORT).show();
 
             }
-        }, 3000);
+        }, 2000);
 
     }
 
@@ -149,10 +194,52 @@ public class GameFragment extends Fragment implements SensorEventListener {
 
     }
 
-    private void setQuestion() {
+    private void validateAnswerOne() {
+
+        String rightAnswer = MainActivity.db.questionDao().getSingleAnswerRight(counter);
+        String answerOne = MainActivity.db.questionDao().getSingleAnswerOne(counter);
+
+        if (!answerOne.equals(rightAnswer)) {
+            onWrongSound();
+            mAnswerBG1.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+            mAnswerBG2.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+        } else {
+            onRightSound();
+            mAnswerBG1.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+            mAnswerBG2.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+            mAnswer1.setTextSize(48);
+        }
+
 
     }
 
+    private void validateAnswerTwo() {
 
+        String rightAnswer = MainActivity.db.questionDao().getSingleAnswerRight(counter);
+        String answerTwo = MainActivity.db.questionDao().getSingleAnswerTwo(counter);
+
+        if (!answerTwo.equals(rightAnswer)) {
+            onWrongSound();
+            mAnswerBG1.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+            mAnswerBG2.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+        } else {
+            onRightSound();
+            mAnswerBG1.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+            mAnswerBG2.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+            mAnswer2.setTextSize(48);
+        }
+
+
+    }
+
+    private void onRightSound() {
+        MediaPlayer correct = MediaPlayer.create(getContext(), R.raw.correct_answer);
+        correct.start();
+    }
+
+    private void onWrongSound() {
+        MediaPlayer wrong = MediaPlayer.create(getContext(), R.raw.wrong_answer);
+        wrong.start();
+    }
 
 }

@@ -34,7 +34,8 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         viewHolder.mQuestion.setText(question.getQuestion_question());
         viewHolder.mAnswers.setText(question.getQuestion_answer_1() +
                 " / " +
-                question.getQuestion_answer_2());
+                question.getQuestion_answer_2() +
+                " / " + question.getQuestion_answer_right());
 
     }
 

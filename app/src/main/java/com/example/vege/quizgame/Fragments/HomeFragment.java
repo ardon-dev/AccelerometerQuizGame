@@ -1,5 +1,6 @@
 package com.example.vege.quizgame.Fragments;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.vege.quizgame.GameActivity;
 import com.example.vege.quizgame.R;
 
 public class HomeFragment extends Fragment implements SensorEventListener {
@@ -65,9 +67,8 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
                 //when device turns up, game start
                 if (x < 0) {
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
-                            new GameFragment()).commit();
-                    mSensorManager.unregisterListener(this);
+                    startActivity(new Intent(getActivity(), GameActivity.class));
+                    stopSensor();
                 }
 
                 break;

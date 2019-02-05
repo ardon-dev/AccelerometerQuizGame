@@ -24,4 +24,7 @@ public interface QuestionDao {
     @Query("SELECT question_answer_2 FROM question WHERE question_id = :id")
     String getSingleAnswerTwo(int id);
 
+    @Query("SELECT question_answer_right FROM question WHERE question_id = :id")
+    String getSingleAnswerRight(int id);
+
 }
