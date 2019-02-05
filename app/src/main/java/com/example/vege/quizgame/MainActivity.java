@@ -38,57 +38,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //database build
         db = Room.databaseBuilder(this, AppDataBase.class, "question_db")
                 .allowMainThreadQueries().build();
-
-        db.questionDao().insertAllQuestion(new Question("¿Cuántos días tiene un año bisiesto?",
-                "365 días",
-                "366 días",
-                "366 días"));
-
-        db.questionDao().insertAllQuestion(new Question("¿Abraham Lincoln fue presidente de qué país?",
-                "EEUU",
-                "Inglaterra",
-                "EEUU"));
-
-        db.questionDao().insertAllQuestion(new Question("¿Cuál es la capital de China?",
-                "Hong Kong",
-                "Tokio",
-                "Hong Kong"));
-
-        db.questionDao().insertAllQuestion(new Question("¿Cómo se conoce a la escritura del Antiguo Egipto?",
-                "Hebraica",
-                "Jeroglíficos",
-                "Jeroglíficos"));
-
-        db.questionDao().insertAllQuestion(new Question("¿Dónde podemos encontrar la Estatua de la Libertad?",
-                "Nueva York",
-                "Los Ángeles",
-                "Nueva York"));
-
-        db.questionDao().insertAllQuestion(new Question("¿Qué hombre puso por primera vez el pie en la Luna?",
-                "Lindbergh",
-                "Armstrong",
-                "Armstrong"));
-
-        db.questionDao().insertAllQuestion(new Question("¿Cuántas estaciones tiene el año?",
-                "Cuatro",
-                "Cinco",
-                "Cuatro"));
-
-        db.questionDao().insertAllQuestion(new Question("¿A qué aparato pertenecen las venas?",
-                "Circulatorio",
-                "Digestivo",
-                "Circulatorio"));
-
-        db.questionDao().insertAllQuestion(new Question("¿Qué aparato se encarga de recoger oxígeno?",
-                "Respiratorio",
-                "Escretor",
-                "Respiratorio"));
-
-        db.questionDao().insertAllQuestion(new Question("¿Por qué sudamos cuando hace calor?",
-                "Para evitar el cansancio",
-                "Para regular la temperatura corporal",
-                "Para regular la temperatura corporal"));
-
+        
         //sensor setup
         sensorConfig();
 
