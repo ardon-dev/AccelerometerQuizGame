@@ -7,7 +7,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.vege.quizgame.DataBase.AllQuestions;
 import com.example.vege.quizgame.DataBase.AppDataBase;
 import com.example.vege.quizgame.DataBase.Question;
 import com.example.vege.quizgame.Fragments.HomeFragment;
@@ -38,7 +38,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //database build
         db = Room.databaseBuilder(this, AppDataBase.class, "question_db")
                 .allowMainThreadQueries().build();
-        
+
+        //add all questions to database
+        if (db.questionDao().getAllQuestion() == null) {
+            insertQuestionToDB();
+        } else {
+
+        }
+
         //sensor setup
         sensorConfig();
 
@@ -64,6 +71,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         startSensor();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     /**SENSOR FUNCTIONS**/
@@ -128,6 +140,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+    }
+
+    private void insertQuestionToDB() {
+        for (Question q : AllQuestions.insertQuestions()) {
+            db.questionDao().insertAllQuestion(new Question(q.getQuestion_question(),
+                    q.getQuestion_answer_1(),
+                    q.getQuestion_answer_2(),
+                    q.getQuestion_answer_right()));
+        }
     }
 
 

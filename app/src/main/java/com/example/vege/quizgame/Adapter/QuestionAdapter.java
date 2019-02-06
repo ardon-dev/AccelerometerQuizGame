@@ -31,7 +31,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         Question question = questions.get(i);
 
-        viewHolder.mQuestion.setText(question.getQuestion_question());
+        viewHolder.mQuestion.setText(String.valueOf(question.getQuestion_id()) + ". " + question.getQuestion_question());
         viewHolder.mAnswers.setText(question.getQuestion_answer_1() +
                 " / " +
                 question.getQuestion_answer_2() +

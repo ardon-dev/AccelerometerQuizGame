@@ -143,9 +143,8 @@ public class GameFragment extends Fragment implements SensorEventListener {
         mAnswerBG2.setVisibility(View.INVISIBLE);
         mQuestion.setVisibility(View.INVISIBLE);
 
-        //SEE VIEW
+        //SHOW VIEW
         mGameFinished.setVisibility(View.VISIBLE);
-
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

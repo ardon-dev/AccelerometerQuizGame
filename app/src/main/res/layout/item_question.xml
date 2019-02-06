@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_rounded"
+    android:layout_margin="8dp">
 
     <LinearLayout
         android:orientation="vertical"
@@ -15,14 +17,18 @@
             android:id="@+id/questionView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="QUestion"/>
+            android:text="Question"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/answersView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Answer"/>
+            android:text="Answer"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="4dp"/>
 
     </LinearLayout>
 
