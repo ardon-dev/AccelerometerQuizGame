@@ -17,13 +17,12 @@ import android.widget.TextView;
 import com.example.vege.quizgame.DataBase.AllQuestions;
 import com.example.vege.quizgame.DataBase.AppDataBase;
 import com.example.vege.quizgame.DataBase.Question;
-import com.example.vege.quizgame.Fragments.HomeFragment;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private Sensor mAccelerometer;
     private SensorManager mSensorManager;
-    private TextView mCoordinates;
+    private TextView mCoordinates, mPlay;
     public static AppDataBase db;
 
     @Override
@@ -34,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         mCoordinates = findViewById(R.id.coordinates);
+        mPlay = findViewById(R.id.buttonPlay);
 
         //database build
         db = Room.databaseBuilder(this, AppDataBase.class, "question_db")
@@ -49,10 +49,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //sensor setup
         sensorConfig();
 
-        //setting initial screen (home fragment)
-        setFragment();
+        //intent to game activity listener
+        mPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //intent to game activity
+                startActivity(new Intent(MainActivity.this, GameActivity.class));
+                stopSensor();
+            }
+        });
 
-        //ist onclick button
+        //list onclick button
         showQuestions();
 
     }
@@ -97,19 +104,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         "y: " + String.valueOf(y));
 
                 break;
+
         }
 
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
-
-    private void setFragment() {
-        //activity will start with home fragment
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new HomeFragment()).commit();
 
     }
 
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void stopSensor() {
         mSensorManager.unregisterListener(this);
+
     }
 
     private void startSensor() {
@@ -148,8 +150,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     q.getQuestion_answer_1(),
                     q.getQuestion_answer_2(),
                     q.getQuestion_answer_right()));
-        }
-    }
 
+        }
+
+    }
 
 }

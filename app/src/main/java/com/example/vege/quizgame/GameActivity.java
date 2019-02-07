@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.example.vege.quizgame.Fragments.GameFragment;
-import com.example.vege.quizgame.Fragments.HomeFragment;
 
 public class GameActivity extends AppCompatActivity {
 
