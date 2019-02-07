@@ -7,6 +7,7 @@ import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,11 +23,12 @@ import com.example.vege.quizgame.R;
 
 public class GameFragment extends Fragment implements SensorEventListener {
 
-    private Sensor mAccelerometer;
+    private Sensor mAccelerometer, mProximity;
     private SensorManager mSensorManager;
-    private TextView mQuestion, mAnswer1, mAnswer2, mGameFinished;
+    private TextView mQuestion, mAnswer1, mAnswer2, mGameFinished, mQuestionSkip;
     public static int counter;
     private RelativeLayout mAnswerBG1, mAnswerBG2;
+    private Vibrator mVibrator;
 
     @Nullable
     @Override
@@ -45,6 +47,8 @@ public class GameFragment extends Fragment implements SensorEventListener {
         mAnswerBG1 = getActivity().findViewById(R.id.answerBackground1);
         mAnswerBG2 = getActivity().findViewById(R.id.answerBackground2);
         mGameFinished = getActivity().findViewById(R.id.gameFinishedText);
+        mQuestionSkip = getActivity().findViewById(R.id.questionSkipText);
+        mVibrator = (Vibrator)getActivity().getSystemService(getContext().VIBRATOR_SERVICE);
 
     }
 
@@ -76,7 +80,7 @@ public class GameFragment extends Fragment implements SensorEventListener {
         //sensor continue working
         sensorStart();
 
-        //the game will ends when the questions are over
+        //the game ends when the questions are over
         if (counter < MainActivity.db.questionDao().getAllQuestion().size()) {
             gameStart();
 
@@ -101,12 +105,12 @@ public class GameFragment extends Fragment implements SensorEventListener {
                 int direction = (int)y;
 
                 switch (direction) {
-                    case -2:
+                    case -3:
                         validateAnswerOne();
                         stopSensor();
                         switchFragment();
                         break;
-                    case 2:
+                    case 3:
                         validateAnswerTwo();
                         stopSensor();
                         switchFragment();
@@ -115,6 +119,15 @@ public class GameFragment extends Fragment implements SensorEventListener {
                 }
 
                 break;
+
+            case Sensor.TYPE_PROXIMITY:
+
+                float proximity = event.values[0];
+
+                if (proximity <= 0) {
+                    skipQuestion();
+                }
+
         }
 
     }
@@ -136,14 +149,9 @@ public class GameFragment extends Fragment implements SensorEventListener {
 
     private void gameFinish() {
 
-        //HIDE VIEWS
-        mAnswer1.setVisibility(View.INVISIBLE);
-        mAnswerBG1.setVisibility(View.INVISIBLE);
-        mAnswer2.setVisibility(View.INVISIBLE);
-        mAnswerBG2.setVisibility(View.INVISIBLE);
-        mQuestion.setVisibility(View.INVISIBLE);
+        hideViews();
 
-        //SHOW VIEW
+        //SHOW GAME ENDS
         mGameFinished.setVisibility(View.VISIBLE);
 
         Handler handler = new Handler();
@@ -176,15 +184,28 @@ public class GameFragment extends Fragment implements SensorEventListener {
 
     }
 
+    private void skipQuestion() {
+        //background color change to black and phone will vibrate
+        stopSensor();
+        hideViews();
+        mQuestionSkip.setVisibility(View.VISIBLE);
+        mVibrator.vibrate(35);
+        switchFragment();
+
+    }
+
     private void sensorConfig(){
 
         mSensorManager = (SensorManager) getContext().getSystemService(getContext().SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
     }
 
     private void sensorStart() {
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
+
 
     }
 
@@ -192,6 +213,7 @@ public class GameFragment extends Fragment implements SensorEventListener {
         mSensorManager.unregisterListener(this);
 
     }
+
 
     private void validateAnswerOne() {
 
@@ -202,6 +224,7 @@ public class GameFragment extends Fragment implements SensorEventListener {
             onWrongSound();
             mAnswerBG1.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
             mAnswerBG2.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+            mAnswer1.setTextSize(48);
         } else {
             onRightSound();
             mAnswerBG1.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
@@ -221,6 +244,7 @@ public class GameFragment extends Fragment implements SensorEventListener {
             onWrongSound();
             mAnswerBG1.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
             mAnswerBG2.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+            mAnswer2.setTextSize(48);
         } else {
             onRightSound();
             mAnswerBG1.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
@@ -239,6 +263,15 @@ public class GameFragment extends Fragment implements SensorEventListener {
     private void onWrongSound() {
         MediaPlayer wrong = MediaPlayer.create(getContext(), R.raw.wrong_answer);
         wrong.start();
+    }
+
+    private void hideViews() {
+        mAnswer1.setVisibility(View.INVISIBLE);
+        mAnswerBG1.setVisibility(View.INVISIBLE);
+        mAnswer2.setVisibility(View.INVISIBLE);
+        mAnswerBG2.setVisibility(View.INVISIBLE);
+        mQuestion.setVisibility(View.INVISIBLE);
+
     }
 
 }
