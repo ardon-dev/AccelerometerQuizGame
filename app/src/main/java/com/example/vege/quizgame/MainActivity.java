@@ -7,6 +7,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager mSensorManager;
     private TextView mCoordinates, mPlay;
     public static AppDataBase db;
+    private static MediaPlayer homeMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +37,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mCoordinates = findViewById(R.id.coordinates);
         mPlay = findViewById(R.id.buttonPlay);
 
+        //music starts
+        homeMusic = MediaPlayer.create(this, R.raw.home_music);
+        homeMusic.start();
+
         //database build
         db = Room.databaseBuilder(this, AppDataBase.class, "question_db")
                 .allowMainThreadQueries().build();
 
         //add all questions to database
-        if (db.questionDao().getAllQuestion() == null) {
+        if (db.questionDao().getAllQuestion().isEmpty() == true) {
             insertQuestionToDB();
-        } else {
 
         }
 
@@ -53,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //button sound
+                MediaPlayer.create(MainActivity.this, R.raw.start).start();
                 //intent to game activity
                 startActivity(new Intent(MainActivity.this, GameActivity.class));
                 stopSensor();
@@ -66,9 +73,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     protected void onPause() {
+        stopSensor();
+        homeMusic.pause();
         super.onPause();
 
-        stopSensor();
+
 
     }
 
@@ -77,12 +86,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onResume();
 
         startSensor();
+        homeMusic.start();
 
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     /**SENSOR FUNCTIONS**/
@@ -154,5 +159,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
     }
+
 
 }
